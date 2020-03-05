@@ -5,7 +5,7 @@ services:
     volumes:
       - db-volume:/var/lib/mysql
     ports:
-      - 3306:3306
+      - 8306:3306
     environment:
       MYSQL_ROOT_PASSWORD: password
   web:
@@ -17,5 +17,11 @@ services:
       - "3000:3000"
     depends_on:
       - db
+    tty: true
+    stdin_open: true
+    entrypoint:
+      - sleep
+    command:
+      - "1000000000"
 volumes:
   db-volume:
