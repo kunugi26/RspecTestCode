@@ -23,7 +23,7 @@ RSpec.describe FoodEnquete, type: :model do
 
         answered_enquete = FoodEnquete.first
         # [Point.3-3-5][Point.3-3-1]で作成したデータを同一か検証します。
-        expect(answered_enquete.name).to eq('中田 太郎')
+        expect(answered_enquete.name).to eq('田中 太郎')
         expect(answered_enquete.mail).to eq('taro.tanaka@example.com')
         expect(answered_enquete.age).to eq(25)
         expect(answered_enquete.food_id).to eq(2)
@@ -31,7 +31,28 @@ RSpec.describe FoodEnquete, type: :model do
         expect(answered_enquete.request).to eq('おいしかったです。')
         expect(answered_enquete.present_id).to eq(1)
         # ==========ここまで追加する==========
+      end
+    end
+  end
 
+  describe '入力項目の有無' do
+    context '必須入力であること' do
+      it 'お名前が必須であること' do
+        new_enquete = FoodEnquete.new
+        # バリデーションエラーが発生し、保存が失敗することを確認
+        expect(new_enquete).not_to be_valid
+        # 必須入力のメッセージが含まれていることを検証
+        expect(new_enquete.save).to be_falsy
+      end
+    end
+
+    context '任意入力であること' do
+      it "ご意見・ご要望が任意であること" do
+        new_enquete = FoodEnquete.new
+        expect(new_enquete).not_to be_valid
+        # エラーメッセージが含まれていないこと
+        expect(new_enquete.errors).not_to include(I18n.t('errors.messages.blank'))
+        binding.pry
       end
     end
   end
