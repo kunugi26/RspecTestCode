@@ -52,8 +52,51 @@ RSpec.describe FoodEnquete, type: :model do
         expect(new_enquete).not_to be_valid
         # エラーメッセージが含まれていないこと
         expect(new_enquete.errors).not_to include(I18n.t('errors.messages.blank'))
-        binding.pry
       end
+    end
+  end
+
+  describe 'アンケート回答時の条件' do
+    context '年齢を確認すること' do
+      it '未成年はビール飲み放題を選択できないこと' do
+        enquete_sato = FoodEnquete.new(
+          name: '佐藤仁美',
+          mail: 'hitomi.sato@example.com',
+          age: 19,
+          food_id: 2,
+          score: 3,
+          request: 'おいしかったです。',
+          present_id: 1 #ビール飲み放題
+        )
+
+        expect(enquete_sato).not_to be_valid
+        # 成人のみ選択できる旨のメッセージが含まれることを検証します。
+        expect(enquete_sato.errors[:present_id]).to include("は成人の方のみ選択できます")
+      end
+
+      it '成人はビール飲み放題を選択できること' do
+        enquete_sato = FoodEnquete.new(
+          name: '佐藤仁美',
+          mail: 'hitomi.sato@example.com',
+          age: 20,
+          food_id: 2,
+          score: 3,
+          request: 'おいしかったです。',
+          present_id: 1 #ビール飲み放題
+        )
+        expect(enquete_sato).to be_valid
+      end
+    end
+  end
+
+  describe '#adult?' do
+    it '20歳以上は成人であること' do
+      FoodEnquete = FoodEnquete.new
+      expect(FoodEnquete.send(:adult?, 19)).to be_falsy
+    end
+
+    it "20歳以上は成人であること" do
+      expect(FoodEnquete.send(:adult?, 20)).to be_truthy
     end
   end
 end
